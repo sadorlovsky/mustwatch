@@ -1,0 +1,27 @@
+{
+  "name": "mustsee",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Zach Orlovsky <sadorlovsky@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "lint": "standard",
+    "precommit": "lint-staged",
+    "prepush": "standard"
+  },
+  "dependencies": {
+    "chalk": "^2.3.0",
+    "get-stdin": "^5.0.1",
+    "iconv-lite": "^0.4.19",
+    "lodash": "^4.17.4",
+    "node-xlsx": "^0.11.2"
+  },
+  "devDependencies": {
+    "husky": "^0.14.3",
+    "lint-staged": "^6.0.0",
+    "standard": "^10.0.3"
+  },
+  "lint-staged": {
+    "*.js": "lint"
+  }
+}
