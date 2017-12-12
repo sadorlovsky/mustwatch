@@ -4,6 +4,9 @@
   "main": "index.js",
   "author": "Zach Orlovsky <sadorlovsky@gmail.com>",
   "license": "MIT",
+  "bin": {
+    "mustwatch" : "./index.js"
+  },
   "scripts": {
     "lint": "standard",
     "precommit": "lint-staged",
