@@ -17,13 +17,13 @@ const main = async () => {
 
   const buffer = fileBuffer || stdInBuffer
 
-  const text = iconv.decode(buffer, 'win1251')
-  const utf8Buffer = iconv.encode(text, 'utf8')
-  const [{ data }] = xlsx.parse(utf8Buffer)
+  const convertBufferEncoding = (buffer, from, to) => iconv.encode(iconv.decode(buffer, from), to)
+
+  const [{ data }] = xlsx.parse(convertBufferEncoding(buffer, 'win1251', 'utf8'))
 
   const [keys, ...movies] = data
 
-  const mapValuesWithKey = map.convert({ 'cap': false })
+  const mapValuesWithKey = map.convert({ cap: false })
 
   const transform = compose(
     filter(x => gt(x.count, 1)),
