@@ -29,7 +29,7 @@ const main = async () => {
     mapValuesWithKey((value, key) => ({
       director: key,
       count: value.length,
-      movies: value
+      movies: orderBy('год', 'desc', value)
     })),
     groupBy('режисcёр'),
     map(pick([
