@@ -5,19 +5,40 @@
   "author": "Zach Orlovsky <sadorlovsky@gmail.com>",
   "license": "MIT",
   "bin": {
-    "mustwatch" : "./index.js"
+    "mustwatch": "./cli.js"
   },
   "scripts": {
     "lint": "standard",
     "precommit": "lint-staged",
-    "prepush": "standard"
+    "prepush": "standard",
+    "webpack:watch": "webpack --watch",
+    "webpack:build": "webpack",
+    "electron": "electron app/main/index.js",
+    "start": "npm-run-all --parallel webpack:watch electron"
   },
   "dependencies": {
+    "@sadorlovsky/rename-props": "^3.0.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-react": "^6.24.1",
     "chalk": "^2.3.0",
+    "common-tags": "^1.6.0",
+    "electron": "^1.7.9",
+    "electron-is-dev": "^0.3.0",
+    "electron-packager": "^10.1.0",
+    "elemon": "^5.0.3",
     "get-stdin": "^5.0.1",
+    "got": "^8.0.1",
     "iconv-lite": "^0.4.19",
     "lodash": "^4.17.4",
-    "node-xlsx": "^0.11.2"
+    "node-xlsx": "^0.11.2",
+    "npm-run-all": "^4.1.2",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-dropzone": "^4.2.3",
+    "recompose": "^0.26.0",
+    "styled-jsx": "^2.2.1",
+    "webpack": "^3.10.0"
   },
   "devDependencies": {
     "husky": "^0.14.3",

@@ -1,24 +1,14 @@
-#!/usr/bin/env node
 'use strict'
-const fs = require('fs')
-const getStdin = require('get-stdin')
-const chalk = require('chalk')
-const iconv = require('iconv-lite')
 const xlsx = require('node-xlsx')
+const iconv = require('iconv-lite')
 const {
-  compose, map, zipObj, pick, groupBy,
-  orderBy, max, repeat, join, divide,
-  multiply, toNumber, filter, gt
+  compose, map, zipObj, pick, groupBy, orderBy, filter, gt, curryRight
 } = require('lodash/fp')
+const renameProps = require('@sadorlovsky/rename-props').default
 
-const main = async () => {
-  const stdInBuffer = await getStdin.buffer()
-  const fileBuffer = process.argv[2] && fs.readFileSync(process.argv[2])
+const convertBufferEncoding = (buffer, from, to) => iconv.encode(iconv.decode(buffer, from), to)
 
-  const buffer = fileBuffer || stdInBuffer
-
-  const convertBufferEncoding = (buffer, from, to) => iconv.encode(iconv.decode(buffer, from), to)
-
+module.exports = (buffer, gtCount = 1) => {
   const [{ data }] = xlsx.parse(convertBufferEncoding(buffer, 'win1251', 'utf8'))
 
   const [keys, ...movies] = data
@@ -26,61 +16,31 @@ const main = async () => {
   const mapValuesWithKey = map.convert({ cap: false })
 
   const transform = compose(
-    filter(x => gt(x.count, 1)),
+    filter(x => gt(x.count, gtCount)),
     orderBy('count', 'desc'),
     mapValuesWithKey((value, key) => ({
       director: key,
       count: value.length,
-      movies: orderBy('год', 'desc', value)
+      movies: orderBy('year', 'desc', value)
     })),
-    groupBy('режисcёр'),
+    groupBy('director'),
     map(pick([
-      'русскоязычное название',
-      'оригинальное название',
-      'год',
-      'страны',
-      'режисcёр',
-      'актёры',
-      'время',
-      'жанры',
-      'рейтинг КиноПоиска'
+      'titleRU', 'titleEN', 'year', 'countries', 'director',
+      'actors', 'time', 'genres', 'rating'
     ])),
+    map(curryRight(renameProps)({
+      'русскоязычное название': 'titleRU',
+      'оригинальное название': 'titleEN',
+      'год': 'year',
+      'страны': 'countries',
+      'режисcёр': 'director',
+      'актёры': 'actors',
+      'время': 'time',
+      'жанры': 'genres',
+      'рейтинг КиноПоиска': 'rating'
+    })),
     map(zipObj(keys))
   )
 
-  const list = transform(movies)
-
-  const getMaxSymbols = compose(
-    x => divide(x, 1.3),
-    max,
-    map(x => x.length),
-    map(x => chalk`{bold ${x.director}} {dim (${x.count})}`)
-  )
-
-  const maxLongString = getMaxSymbols(list)
-
-  const getRating = compose(
-    x => x.toFixed(3),
-    multiply(0.001),
-    toNumber
-  )
-
-  const print = ({ director, count, movies }) => {
-    const title = chalk`{bold ${director}} {dim (${count})}`
-    const delimeter = repeat(maxLongString, '─')
-    const body = compose(
-      join('\n\n'),
-      map(x => chalk`✔ ${x['русскоязычное название']} {cyan ${x['год']}}
-  {gray ${x['оригинальное название']}} {italic ${x['страны']}}
-  ${x['актёры']}
-  ${x['жанры']} {blue ${x['время']} мин} {green.bold ${getRating(x['рейтинг КиноПоиска'])}}`)
-    )(movies)
-    console.log(title)
-    console.log(body)
-    console.log(delimeter)
-  }
-
-  list.forEach(print)
+  return transform(movies)
 }
-
-main()
