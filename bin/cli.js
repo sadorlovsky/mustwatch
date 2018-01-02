@@ -7,7 +7,7 @@ const {
   compose, map, max, repeat, join, divide, multiply, toNumber
 } = require('lodash/fp')
 const { stripIndent } = require('common-tags')
-const mustwatch = require('.')
+const mustwatch = require('../lib')
 
 const getRating = compose(
   x => x.toFixed(3),

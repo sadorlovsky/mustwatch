@@ -1,11 +1,11 @@
 {
   "name": "mustwatch",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "lib/index.js",
   "author": "Zach Orlovsky <sadorlovsky@gmail.com>",
   "license": "MIT",
   "bin": {
-    "mustwatch": "./cli.js"
+    "mustwatch": "bin/cli.js"
   },
   "scripts": {
     "lint": "standard",
