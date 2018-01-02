@@ -80,15 +80,13 @@ ipcMain.on('fetch', async event => {
 
   win.webContents.session.cookies.get({}, async (err, cookies) => {
     if (err) throw new Error(err)
-    const lel = cookies.reduce((res, x) => {
+    const cookieData = cookies.reduce((res, x) => {
       return `${cookie.serialize(x.name, x.value)};${res}`
     }, '')
 
     const { body } = await got('https://www.kinopoisk.ru/mykp/movies/xls/type/3575/', {
       encoding: null,
-      headers: {
-        cookie: lel
-      }
+      headers: { cookie: cookieData }
     })
 
     const data = mustwatch(body, 0)
