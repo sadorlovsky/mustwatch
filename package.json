@@ -1,9 +1,15 @@
 {
   "name": "mustwatch",
-  "version": "1.0.0",
+  "version": "0.1.0",
+  "description": "Must watch movies app",
   "main": "lib/index.js",
-  "author": "Zach Orlovsky <sadorlovsky@gmail.com>",
   "license": "MIT",
+  "repository": "sadorlovsky/mustwatch",
+  "author": {
+    "name": "Zach Orlovsky",
+    "email": "sadorlovsky@gmail.com",
+    "url": "orlovsky.rocks"
+  },
   "bin": {
     "mustwatch": "bin/cli.js"
   },
