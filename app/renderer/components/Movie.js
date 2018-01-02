@@ -1,14 +1,6 @@
 import React from 'react'
 import he from 'he'
-const {
-  compose, multiply, toNumber
-} = require('lodash/fp')
-
-const getRating = compose(
-  x => x.toFixed(1),
-  multiply(0.001),
-  toNumber
-)
+import { getRating } from '../../../lib/utils'
 
 const Movie = ({ titleRU, titleEN, countries, year, time, actors, genres, rating }) => (
   <div className='movie'>

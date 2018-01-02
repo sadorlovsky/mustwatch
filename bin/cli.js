@@ -3,17 +3,10 @@
 const fs = require('fs')
 const getStdin = require('get-stdin')
 const chalk = require('chalk')
-const {
-  compose, map, max, repeat, join, divide, multiply, toNumber
-} = require('lodash/fp')
+const { compose, map, max, repeat, join, divide } = require('lodash/fp')
 const { stripIndent } = require('common-tags')
 const mustwatch = require('../lib')
-
-const getRating = compose(
-  x => x.toFixed(3),
-  multiply(0.001),
-  toNumber
-)
+const { getRating } = require('../lib/utils')
 
 const getMaxSymbols = compose(
   x => divide(x, 1.3),
