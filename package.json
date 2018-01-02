@@ -30,6 +30,8 @@
     "elemon": "^5.0.3",
     "get-stdin": "^5.0.1",
     "got": "^8.0.1",
+    "halogenium": "^2.2.3",
+    "he": "^1.1.1",
     "iconv-lite": "^0.4.19",
     "jssha": "^2.3.1",
     "lodash": "^4.17.4",
@@ -39,6 +41,7 @@
     "react-dom": "^16.2.0",
     "react-dropzone": "^4.2.3",
     "recompose": "^0.26.0",
+    "smart-plurals": "^1.1.0",
     "styled-jsx": "^2.2.1",
     "webpack": "^3.10.0"
   },
