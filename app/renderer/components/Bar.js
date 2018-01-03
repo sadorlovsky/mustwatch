@@ -1,13 +1,20 @@
 import React from 'react'
 import smart from 'smart-plurals'
+import { ipcRenderer } from 'electron'
+import { withState } from 'recompose'
 
 const plural = smart.Plurals.getRule('ru')
 
-const Bar = ({ count }) => (
+const Bar = ({ count, checked, toggleChecked }) => (
   <div className='bar'>
     <div>{count} {plural(count, ['фильм', 'фильма', 'фильмов'])}</div>
-    <div>группировать по
-      <select className='select'>
+    <div className='logout' onClick={() => {
+      ipcRenderer.send('logout')
+    }}>выйти</div>
+    <div>
+      <input type='checkbox' checked={checked} onClick={() => toggleChecked(!checked)} />
+      <span onClick={() => toggleChecked(!checked)}>группировать по</span>
+      <select className='select' disabled={!checked}>
         <option selected>режиссерам</option>
       </select>
     </div>
@@ -19,6 +26,10 @@ const Bar = ({ count }) => (
         justify-content: space-between;
       }
 
+      .logout {
+        cursor: pointer;
+      }
+
       .select {
         margin-left: 5px;
       }
@@ -26,4 +37,6 @@ const Bar = ({ count }) => (
   </div>
 )
 
-export default Bar
+const enhanced = withState('checked', 'toggleChecked', true)
+
+export default enhanced(Bar)

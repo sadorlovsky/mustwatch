@@ -137,6 +137,15 @@ ipcMain.on('fetch', async event => {
   })
 })
 
+ipcMain.on('logout', async () => {
+  win.webContents.session.clearStorageData({}, () => {
+    win.loadURL(process.env.KINOPOISK_URL)
+    win.webContents.enableDeviceEmulation({
+      screenPosition: 'mobile'
+    })
+  })
+})
+
 const loadApp = () => {
   win.loadURL(url.format({
     pathname: path.join(__dirname, '../renderer', 'index.html'),
