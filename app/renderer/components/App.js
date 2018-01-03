@@ -30,13 +30,15 @@ const App = ({ toggleDropzoneActive, data, onDrop, onSearch }) => (
         {...props} />
     ))}
 
-    <style global jsx>{`
+    <style jsx global>{`
       body {
         font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto, Oxygen,Ubuntu,Cantarell,'Fira Sans','Droid Sans','Helvetica Neue', sans-serif;
         font-feature-settings: 'calt','tnum','ss01','case';
         -webkit-font-smoothing: antialiased;
         background: #0D1013;
         color: #fff;
+        padding: 15px;
+        margin: 0;
       }
     `}</style>
     <style jsx>{`

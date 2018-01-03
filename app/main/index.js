@@ -1,15 +1,22 @@
+require('dotenv').config()
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 const url = require('url')
+const delay = require('delay')
 const got = require('got')
 const cookie = require('cookie')
+const pMap = require('p-map')
+const { compose, groupBy, map, orderBy } = require('lodash/fp')
+const { differenceBy } = require('lodash')
+const { addMovie, getMovies, deleteMovie } = require('./store')
+const { getId } = require('../../lib/utils')
 const mustwatch = require('../../lib')
 
 let win
 let cache
+const mapValuesWithKey = map.convert({ cap: false })
 
 function createWindow () {
-  // Create the browser window.
   win = new BrowserWindow({
     width: 600,
     height: 600,
@@ -21,16 +28,12 @@ function createWindow () {
     }
   })
 
-  win.loadURL('https://www.kinopoisk.ru')
+  win.loadURL(process.env.KINOPOISK_URL)
   win.webContents.enableDeviceEmulation({
     screenPosition: 'mobile'
   })
 
-  // Emitted when the window is closed.
   win.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
     win = null
   })
 }
@@ -39,7 +42,7 @@ app.on('ready', () => {
   createWindow()
 
   win.webContents.session.cookies.get({
-    url: 'https://www.kinopoisk.ru',
+    url: process.env.KINOPOISK_URL,
     session: true
   }, (err, cookies) => {
     if (err) throw new Error(err)
@@ -58,16 +61,12 @@ app.on('ready', () => {
 })
 
 app.on('window-all-closed', () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
 
 app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   if (win === null) {
     createWindow()
   }
@@ -89,7 +88,49 @@ ipcMain.on('fetch', async event => {
       headers: { cookie: cookieData }
     })
 
-    const data = mustwatch(body, 0)
+    const dataFromKinopoisk = mustwatch(body)
+    const dataFromStore = getMovies()
+
+    const needToDelete = differenceBy(dataFromStore, dataFromKinopoisk, x => x.id)
+    const needToAdd = differenceBy(dataFromKinopoisk, dataFromStore, x => x.id)
+
+    needToDelete.map(movie => deleteMovie(movie.id))
+
+    await pMap(needToAdd, async movie => {
+      const { body } = await got(`${process.env.THEMOVIEDB_API_URL}/search/movie`, {
+        json: true,
+        query: {
+          api_key: process.env.THEMOVIEDB_API_KEY,
+          language: 'ru',
+          query: movie.titleEN || movie.titleRU,
+          year: movie.year
+        }
+      })
+
+      const result = body.results[0]
+
+      if (result) {
+        movie = Object.assign({}, movie, {
+          poster: result.poster_path,
+          themoviedbId: result.id
+        })
+      }
+
+      addMovie(movie)
+
+      await delay(11000)
+    }, { concurrency: 37 })
+
+    const data = compose(
+      orderBy('count', 'desc'),
+      mapValuesWithKey((value, key) => ({
+        id: getId(key),
+        director: key,
+        count: value.length,
+        movies: orderBy('year', 'desc', value)
+      })),
+      groupBy('director')
+    )(getMovies())
 
     cache = data
     event.sender.send('response', data)

@@ -2,7 +2,7 @@ import React from 'react'
 import he from 'he'
 import { getRating } from '../../../lib/utils'
 
-const Movie = ({ titleRU, titleEN, countries, year, time, actors, genres, rating }) => (
+const Movie = ({ titleRU, titleEN, countries, year, time, actors, genres, rating, poster }) => (
   <div className='movie'>
     <div className='poster' />
     <div>
@@ -38,8 +38,8 @@ const Movie = ({ titleRU, titleEN, countries, year, time, actors, genres, rating
         width: 92px;
         height: 138px;
         background-color: yellow;
-        /* background-image: url(https://image.tmdb.org/t/p/w92/kzseElJTNxjsDlc62DJIugx5Hf2.jpg); */
-        /* background-size: contain; */
+        background-image: url(https://image.tmdb.org/t/p/w92/${poster});
+        background-size: contain;
         margin-right: 10px;
       }
 
