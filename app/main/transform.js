@@ -1,8 +1,6 @@
 'use strict'
 const xlsx = require('node-xlsx')
-const {
-  compose, map, zipObj, pick, curryRight
-} = require('lodash/fp')
+const { compose, map, zipObj, pick, curryRight } = require('lodash/fp')
 const { renameProps } = require('@sadorlovsky/rename-props')
 const { convertBufferEncoding, getId } = require('./utils')
 

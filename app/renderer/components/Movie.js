@@ -1,6 +1,6 @@
 import React from 'react'
 import he from 'he'
-import { getRating } from '../../../lib/utils'
+import { getRating } from '../../main/utils'
 
 const Movie = ({ titleRU, titleEN, countries, year, time, actors, genres, rating, poster }) => (
   <div className='movie'>

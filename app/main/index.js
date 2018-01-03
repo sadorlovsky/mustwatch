@@ -9,8 +9,8 @@ const pMap = require('p-map')
 const { compose, groupBy, map, orderBy } = require('lodash/fp')
 const { differenceBy } = require('lodash')
 const { addMovie, getMovies, deleteMovie } = require('./store')
-const { getId } = require('../../lib/utils')
-const mustwatch = require('../../lib')
+const { getId } = require('./utils')
+const transform = require('./transform')
 
 let win
 let cache
@@ -88,7 +88,7 @@ ipcMain.on('fetch', async event => {
       headers: { cookie: cookieData }
     })
 
-    const dataFromKinopoisk = mustwatch(body)
+    const dataFromKinopoisk = transform(body)
     const dataFromStore = getMovies()
 
     const needToDelete = differenceBy(dataFromStore, dataFromKinopoisk, x => x.id)
