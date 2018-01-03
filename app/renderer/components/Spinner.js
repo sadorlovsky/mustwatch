@@ -3,11 +3,11 @@ import { PulseLoader } from 'halogenium'
 
 const Spinner = () => (
   <div className='container'>
-    <PulseLoader color='#FFFFFF' size='16px' margin='4px' />
+    <PulseLoader color='#F553BF' size='16px' margin='4px' />
 
     <style jsx global>{`
       body {
-        background: #000;
+        background: #282629;
         margin: 0;
         padding: 0;
       }

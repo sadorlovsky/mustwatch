@@ -21,7 +21,7 @@ function createWindow () {
     width: 600,
     height: 600,
     title: 'Буду смотреть',
-    backgroundColor: '#000',
+    backgroundColor: '#282629',
     scrollBounce: true,
     webPreferences: {
       partition: 'persist:main'

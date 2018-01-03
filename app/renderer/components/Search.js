@@ -22,7 +22,7 @@ const Search = ({ query, setQuery, onSearch }) => (
         margin: 0;
         padding: 0;
         box-shadow: none;
-        background: #1154AA;
+        background: #F553BF;
         color: #fff;
         border: none;
         box-sizing: border-box;
@@ -34,7 +34,7 @@ const Search = ({ query, setQuery, onSearch }) => (
       }
 
       input::placeholder {
-        color: #fff;
+        color: #FFFCFF;
       }
     `}</style>
   </div>

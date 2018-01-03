@@ -26,7 +26,7 @@ const Movie = ({ titleRU, titleEN, countries, year, time, actors, genres, rating
       }
 
       .movie:hover {
-        background: #043068;
+        background: #BF65F0;
         border-radius: 3px;
       }
 
@@ -37,7 +37,7 @@ const Movie = ({ titleRU, titleEN, countries, year, time, actors, genres, rating
       .poster {
         width: 92px;
         height: 138px;
-        background-color: yellow;
+        background-color: #FFD24A;
         background-image: url(https://image.tmdb.org/t/p/w92/${poster});
         background-size: contain;
         margin-right: 10px;
@@ -48,12 +48,12 @@ const Movie = ({ titleRU, titleEN, countries, year, time, actors, genres, rating
       }
 
       .title-en {
-        color: #ccc;
+        color: #E0DCE0;
       }
 
       .year {
         margin-left: 5px;
-        color: #ccc;
+        color: #E0DCE0;
       }
 
       .countries {

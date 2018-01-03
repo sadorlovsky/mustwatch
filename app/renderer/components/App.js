@@ -5,12 +5,10 @@ import {
 } from 'recompose'
 import { some } from 'lodash'
 import { ipcRenderer } from 'electron'
-import smart from 'smart-plurals'
 import Spinner from './Spinner'
 import MovieList from './MovieList'
 import Search from './Search'
-
-const plural = smart.Plurals.getRule('ru')
+import Bar from './Bar'
 
 const App = ({ toggleDropzoneActive, data, onDrop, onSearch }) => (
   // <Dropzone
@@ -21,9 +19,7 @@ const App = ({ toggleDropzoneActive, data, onDrop, onSearch }) => (
   // >
   <div>
     <Search onSearch={onSearch} />
-    <div className='bar'>
-      {data.reduce((res, x) => res + x.movies.length, 0)} {plural(data.reduce((res, x) => res + x.movies.length, 0), ['фильм', 'фильма', 'фильмов'])}
-    </div>
+    <Bar count={data.reduce((res, x) => res + x.movies.length, 0)} />
     {data.map((props) => (
       <MovieList
         key={props.id}
@@ -35,15 +31,10 @@ const App = ({ toggleDropzoneActive, data, onDrop, onSearch }) => (
         font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto, Oxygen,Ubuntu,Cantarell,'Fira Sans','Droid Sans','Helvetica Neue', sans-serif;
         font-feature-settings: 'calt','tnum','ss01','case';
         -webkit-font-smoothing: antialiased;
-        background: #0D1013;
-        color: #fff;
+        background: #282629;
+        color: #FFFCFF;
         padding: 15px;
         margin: 0;
-      }
-    `}</style>
-    <style jsx>{`
-      .bar {
-        margin: 10px 0;
       }
     `}</style>
   </div>
