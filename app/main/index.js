@@ -83,7 +83,7 @@ ipcMain.on('fetch', async event => {
       return `${cookie.serialize(x.name, x.value)};${res}`
     }, '')
 
-    const { body } = await got('https://www.kinopoisk.ru/mykp/movies/xls/type/3575/', {
+    const { body } = await got(`${process.env.KINOPOISK_URL}/mykp/movies/xls/type/3575/`, {
       encoding: null,
       headers: { cookie: cookieData }
     })
@@ -97,7 +97,7 @@ ipcMain.on('fetch', async event => {
     needToDelete.map(movie => deleteMovie(movie.id))
 
     await pMap(needToAdd, async movie => {
-      const { body } = await got(`${process.env.THEMOVIEDB_API_URL}/search/movie`, {
+      let { body } = await got(`${process.env.THEMOVIEDB_API_URL}/search/movie`, {
         json: true,
         query: {
           api_key: process.env.THEMOVIEDB_API_KEY,
@@ -107,19 +107,61 @@ ipcMain.on('fetch', async event => {
         }
       })
 
-      const result = body.results[0]
+      let result = body.results[0]
 
       if (result) {
         movie = Object.assign({}, movie, {
           poster: result.poster_path,
           themoviedbId: result.id
         })
+      } else {
+        let { body } = await got(`${process.env.THEMOVIEDB_API_URL}/search/movie`, {
+          json: true,
+          query: {
+            api_key: process.env.THEMOVIEDB_API_KEY,
+            language: 'ru',
+            query: movie.titleEN || movie.titleRU,
+            year: Number(movie.year) + 1
+          }
+        })
+
+        result = body.results[0]
+
+        if (result) {
+          movie = Object.assign({}, movie, {
+            poster: result.poster_path,
+            themoviedbId: result.id
+          })
+        } else {
+          let { body } = await got(`${process.env.THEMOVIEDB_API_URL}/search/movie`, {
+            json: true,
+            query: {
+              api_key: process.env.THEMOVIEDB_API_KEY,
+              language: 'ru',
+              query: movie.titleEN || movie.titleRU,
+              year: Number(movie.year) - 1
+            }
+          })
+
+          result = body.results[0]
+
+          if (result) {
+            movie = Object.assign({}, movie, {
+              poster: result.poster_path,
+              themoviedbId: result.id
+            })
+          }
+        }
+      }
+
+      if (result) {
+        win.webContents.send('poster', { poster: result.poster_path })
       }
 
       addMovie(movie)
 
       await delay(11000)
-    }, { concurrency: 37 })
+    }, { concurrency: 10 })
 
     const data = compose(
       orderBy('count', 'desc'),

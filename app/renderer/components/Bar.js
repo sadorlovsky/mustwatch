@@ -12,10 +12,10 @@ const Bar = ({ count, checked, toggleChecked }) => (
       ipcRenderer.send('logout')
     }}>выйти</div>
     <div>
-      <input type='checkbox' checked={checked} onClick={() => toggleChecked(!checked)} />
+      <input type='checkbox' checked={checked} onChange={() => toggleChecked(!checked)} />
       <span onClick={() => toggleChecked(!checked)}>группировать по</span>
-      <select className='select' disabled={!checked}>
-        <option selected>режиссерам</option>
+      <select className='select' defaultValue='director' disabled={!checked}>
+        <option name='director'>режиссерам</option>
       </select>
     </div>
 

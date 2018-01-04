@@ -1,10 +1,11 @@
 import React from 'react'
 import he from 'he'
+import Poster from './Poster'
 import { getRating } from '../../main/utils'
 
 const Movie = ({ titleRU, titleEN, countries, year, time, actors, genres, rating, poster }) => (
   <div className='movie'>
-    <div className='poster' />
+    <Poster title={titleRU} url={poster} />
     <div>
       <div>
         <span className='title'>{he.decode(String(titleRU))}</span>
@@ -32,15 +33,6 @@ const Movie = ({ titleRU, titleEN, countries, year, time, actors, genres, rating
 
       .movie:not(:last-child) {
         /* margin-bottom: 10px; */
-      }
-
-      .poster {
-        width: 92px;
-        height: 138px;
-        background-color: #FFD24A;
-        background-image: url(https://image.tmdb.org/t/p/w92/${poster});
-        background-size: contain;
-        margin-right: 10px;
       }
 
       .title {

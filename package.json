@@ -2,7 +2,7 @@
   "name": "mustwatch",
   "version": "0.1.0",
   "description": "Must watch movies app",
-  "main": "lib/index.js",
+  "main": "app/main/index.js",
   "license": "MIT",
   "repository": "sadorlovsky/mustwatch",
   "author": {
@@ -17,7 +17,9 @@
     "webpack:watch": "webpack --watch",
     "webpack:build": "webpack",
     "electron": "electron app/main/index.js",
-    "start": "npm-run-all --parallel webpack:watch electron"
+    "start": "npm-run-all --parallel webpack:watch electron",
+    "pack": "electron-packager .",
+    "build": "npm-run-all --serial webpack:build pack"
   },
   "dependencies": {
     "@sadorlovsky/rename-props": "^4.0.0",
@@ -25,6 +27,7 @@
     "babel-loader": "^7.1.2",
     "babel-preset-react": "^6.24.1",
     "chalk": "^2.3.0",
+    "color-hash": "^1.0.3",
     "common-tags": "^1.6.0",
     "cookie": "^0.3.1",
     "delay": "^2.0.0",

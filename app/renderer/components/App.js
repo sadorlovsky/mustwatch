@@ -3,7 +3,7 @@ import React from 'react'
 import {
   compose, withState, lifecycle, branch, renderComponent, withHandlers
 } from 'recompose'
-import { some } from 'lodash'
+import { some, debounce } from 'lodash'
 import { ipcRenderer } from 'electron'
 import Spinner from './Spinner'
 import MovieList from './MovieList'
@@ -55,14 +55,14 @@ const enhanced = compose(
     onDrop: ({ toggleDropzoneActive }) => async ([file]) => {
       toggleDropzoneActive(false)
     },
-    onSearch: ({ allData, setData }) => query => {
+    onSearch: ({ allData, setData }) => debounce(query => {
       const filtered = allData.filter(x => {
         return x.director.toLowerCase().includes(query.toLowerCase()) ||
         some(x.movies, m => m.titleRU && m.titleRU.toLowerCase().includes(query.toLowerCase())) ||
         some(x.movies, m => m.titleEN && m.titleEN.toLowerCase().includes(query.toLowerCase()))
       })
       setData(filtered)
-    }
+    }, 250)
   }),
   lifecycle({
     async componentDidMount () {

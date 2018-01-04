@@ -3,7 +3,7 @@ import Movie from './Movie'
 
 const MovieList = ({ director, count, movies }) => (
   <div className='section'>
-    <div className='header'>{director} <span className='year'>{count}</span></div>
+    <div className='header'>{director} <span className='count'>{count}</span></div>
     <div className='body'>{movies.map(movie => (
       <Movie key={movie.id} {...movie} />
     ))}</div>
@@ -24,8 +24,14 @@ const MovieList = ({ director, count, movies }) => (
         font-weight: bold;
       }
 
-      .year {
-        color: #D342A4;
+      .count {
+        background: #D342A4;
+        color: #FFFCFF;
+        font-weight: normal;
+        padding: 3px 7px;
+        border-radius: 50%;
+        margin-left: 3px;
+        font-size: 14px;
       }
 
       .body {
