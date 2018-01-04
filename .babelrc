@@ -1,4 +1,4 @@
 {
   "presets": ["react"],
-  "plugins": ["styled-jsx/babel"]
+  "plugins": [["styled-jsx/babel", { "plugins": ["styled-jsx-plugin-postcss"] }]]
 }

@@ -3,6 +3,7 @@ import React from 'react'
 import {
   compose, withState, lifecycle, branch, renderComponent, withHandlers
 } from 'recompose'
+import Headroom from 'react-headroom'
 import { some, debounce } from 'lodash'
 import { ipcRenderer } from 'electron'
 import Spinner from './Spinner'
@@ -10,7 +11,7 @@ import MovieList from './MovieList'
 import Search from './Search'
 import Bar from './Bar'
 
-const App = ({ toggleDropzoneActive, data, onDrop, onSearch }) => (
+const App = ({ toggleDropzoneActive, data, onDrop, onSearch, activeMovieId, setActiveMovieId }) => (
   // <Dropzone
   //   disableClick
   //   onDragEnter={() => toggleDropzoneActive(true)}
@@ -18,25 +19,23 @@ const App = ({ toggleDropzoneActive, data, onDrop, onSearch }) => (
   //   onDrop={onDrop}
   // >
   <div>
-    <Search onSearch={onSearch} />
-    <Bar count={data.reduce((res, x) => res + x.movies.length, 0)} />
-    {data.map((props) => (
+    <Headroom style={{ padding: '15px', background: '#282629' }}>
+      <Search onSearch={onSearch} />
+      <Bar count={data.reduce((res, x) => res + x.movies.length, 0)} />
+    </Headroom>
+    <div style={{ padding: '0 15px 15px' }}>{data.map((props) => (
       <MovieList
         key={props.id}
+        activeMovieId={activeMovieId}
+        onClick={id => {
+          if (activeMovieId === id) {
+            setActiveMovieId(null)
+          } else {
+            setActiveMovieId(id)
+          }
+        }}
         {...props} />
-    ))}
-
-    <style jsx global>{`
-      body {
-        font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto, Oxygen,Ubuntu,Cantarell,'Fira Sans','Droid Sans','Helvetica Neue', sans-serif;
-        font-feature-settings: 'calt','tnum','ss01','case';
-        -webkit-font-smoothing: antialiased;
-        background: #282629;
-        color: #FFFCFF;
-        padding: 15px;
-        margin: 0;
-      }
-    `}</style>
+    ))}</div>
   </div>
   // </Dropzone>
 )
@@ -51,6 +50,7 @@ const enhanced = compose(
   withState('data', 'setData', []),
   withState('allData', 'setAllData', []),
   withState('loading', 'toggleLoading', true),
+  withState('activeMovieId', 'setActiveMovieId', null),
   withHandlers({
     onDrop: ({ toggleDropzoneActive }) => async ([file]) => {
       toggleDropzoneActive(false)
@@ -65,7 +65,7 @@ const enhanced = compose(
     }, 250)
   }),
   lifecycle({
-    async componentDidMount () {
+    componentDidMount () {
       ipcRenderer.send('fetch')
       ipcRenderer.on('response', (e, data) => {
         this.props.setAllData(data)

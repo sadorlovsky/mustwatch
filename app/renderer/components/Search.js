@@ -23,14 +23,19 @@ const Search = ({ query, setQuery, onSearch }) => (
         padding: 0;
         box-shadow: none;
         background: #F553BF;
-        color: #fff;
-        border: none;
+        color: #FFFCFF;
+        border: 2px solid transparent;
         box-sizing: border-box;
-        /* margin-bottom: 10px; */
         font-size: 16px;
         height: 40px;
         padding: 10px;
         border-radius: 3px;
+      }
+
+      input:focus {
+        border: none;
+        outline: none;
+        border: 2px solid #FFFCFF;
       }
 
       input::placeholder {

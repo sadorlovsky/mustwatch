@@ -8,16 +8,16 @@ const plural = smart.Plurals.getRule('ru')
 const Bar = ({ count, checked, toggleChecked }) => (
   <div className='bar'>
     <div>{count} {plural(count, ['фильм', 'фильма', 'фильмов'])}</div>
-    <div className='logout' onClick={() => {
-      ipcRenderer.send('logout')
-    }}>выйти</div>
     <div>
-      <input type='checkbox' checked={checked} onChange={() => toggleChecked(!checked)} />
-      <span onClick={() => toggleChecked(!checked)}>группировать по</span>
+      <input className='checkbox' type='checkbox' checked={checked} onChange={() => toggleChecked(!checked)} />
+      <span className='label' onClick={() => toggleChecked(!checked)}>группировать по</span>
       <select className='select' defaultValue='director' disabled={!checked}>
         <option name='director'>режиссерам</option>
       </select>
     </div>
+    <div className='logout' onClick={() => {
+      ipcRenderer.send('logout')
+    }}>выйти</div>
 
     <style jsx>{`
       .bar {
@@ -32,6 +32,10 @@ const Bar = ({ count, checked, toggleChecked }) => (
 
       .select {
         margin-left: 5px;
+      }
+
+      .label, .checkbox {
+        cursor: pointer;
       }
     `}</style>
   </div>

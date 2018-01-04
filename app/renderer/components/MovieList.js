@@ -1,11 +1,15 @@
 import React from 'react'
 import Movie from './Movie'
 
-const MovieList = ({ director, count, movies }) => (
+const MovieList = ({ director, count, movies, onClick, activeMovieId }) => (
   <div className='section'>
     <div className='header'>{director} <span className='count'>{count}</span></div>
     <div className='body'>{movies.map(movie => (
-      <Movie key={movie.id} {...movie} />
+      <Movie
+        key={movie.id}
+        showLinks={activeMovieId === movie.id}
+        onClick={() => onClick(movie.id)}
+        {...movie} />
     ))}</div>
 
     <style jsx>{`
@@ -32,10 +36,6 @@ const MovieList = ({ director, count, movies }) => (
         border-radius: 50%;
         margin-left: 3px;
         font-size: 14px;
-      }
-
-      .body {
-        /* padding: 10px; */
       }
     `}</style>
   </div>

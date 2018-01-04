@@ -8,12 +8,6 @@ const Spinner = ({ poster }) => (
     <div className='overlay' />
     <PulseLoader color='#F553BF' size='16px' margin='4px' />
 
-    <style jsx global>{`
-      body {
-        margin: 0;
-        padding: 0;
-      }
-    `}</style>
     <style jsx>{`
       .container {
         width: 100%;

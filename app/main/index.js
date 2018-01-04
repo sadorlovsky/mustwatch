@@ -2,19 +2,22 @@ require('dotenv').config()
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 const url = require('url')
-const delay = require('delay')
 const got = require('got')
 const cookie = require('cookie')
-const pMap = require('p-map')
 const { compose, groupBy, map, orderBy } = require('lodash/fp')
 const { differenceBy } = require('lodash')
 const { addMovie, getMovies, deleteMovie } = require('./store')
 const { getId } = require('./utils')
 const transform = require('./transform')
+const { fetchAdditionalData } = require('./fetchAdditionalData')
 
 let win
 let cache
 const mapValuesWithKey = map.convert({ cap: false })
+
+try {
+  require('electron-reloader')(module)
+} catch (err) {}
 
 function createWindow () {
   win = new BrowserWindow({
@@ -96,72 +99,7 @@ ipcMain.on('fetch', async event => {
 
     needToDelete.map(movie => deleteMovie(movie.id))
 
-    await pMap(needToAdd, async movie => {
-      let { body } = await got(`${process.env.THEMOVIEDB_API_URL}/search/movie`, {
-        json: true,
-        query: {
-          api_key: process.env.THEMOVIEDB_API_KEY,
-          language: 'ru',
-          query: movie.titleEN || movie.titleRU,
-          year: movie.year
-        }
-      })
-
-      let result = body.results[0]
-
-      if (result) {
-        movie = Object.assign({}, movie, {
-          poster: result.poster_path,
-          themoviedbId: result.id
-        })
-      } else {
-        let { body } = await got(`${process.env.THEMOVIEDB_API_URL}/search/movie`, {
-          json: true,
-          query: {
-            api_key: process.env.THEMOVIEDB_API_KEY,
-            language: 'ru',
-            query: movie.titleEN || movie.titleRU,
-            year: Number(movie.year) + 1
-          }
-        })
-
-        result = body.results[0]
-
-        if (result) {
-          movie = Object.assign({}, movie, {
-            poster: result.poster_path,
-            themoviedbId: result.id
-          })
-        } else {
-          let { body } = await got(`${process.env.THEMOVIEDB_API_URL}/search/movie`, {
-            json: true,
-            query: {
-              api_key: process.env.THEMOVIEDB_API_KEY,
-              language: 'ru',
-              query: movie.titleEN || movie.titleRU,
-              year: Number(movie.year) - 1
-            }
-          })
-
-          result = body.results[0]
-
-          if (result) {
-            movie = Object.assign({}, movie, {
-              poster: result.poster_path,
-              themoviedbId: result.id
-            })
-          }
-        }
-      }
-
-      if (result) {
-        win.webContents.send('poster', { poster: result.poster_path })
-      }
-
-      addMovie(movie)
-
-      await delay(11000)
-    }, { concurrency: 10 })
+    await fetchAdditionalData(needToAdd, addMovie)
 
     const data = compose(
       orderBy('count', 'desc'),
