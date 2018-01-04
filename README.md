@@ -1,6 +1,8 @@
 # mustwatch
 
-> "Must watch" movies grouped by director
+> Буду смотреть
+
+![Screenshot](screenshot.png)
 
 ## License
 
