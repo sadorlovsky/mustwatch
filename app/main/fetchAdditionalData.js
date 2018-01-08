@@ -1,72 +1,64 @@
 const got = require('got')
-const pMap = require('p-map')
+const pMap = require('p-map-series')
 const delay = require('delay')
+const jwt = require('jsonwebtoken')
+// const { compose, groupBy, map, orderBy } = require('lodash/fp')
+const { getMovies, updateMovie } = require('./store')
+// const { getId } = require('./utils')
+
+// const mapValuesWithKey = map.convert({ cap: false })
 
 const search = async ({ query, year }) => {
-  const { body } = await got(`${process.env.THEMOVIEDB_API_URL}/search/movie`, {
-    json: true,
-    query: {
-      api_key: process.env.THEMOVIEDB_API_KEY,
-      language: 'ru',
-      query: query,
-      year: year
-    }
-  })
+  const token = jwt.sign({ foo: 'bar' }, process.env.SECRET)
 
-  return body.results[0]
-}
-
-const fetchAdditionalData = async (movies, cb) => {
-  await pMap(movies, async movie => {
-    let result = await search({ query: movie.titleEN || movie.titleRU, year: movie.year })
-    //
-    // if (!result) {
-    //   result = await search({ query: movie.titleEN || movie.titleRU, year: movie.year + 1 })
-    // }
-    //
-    // if (!result) {
-    //   result = await search({ query: movie.titleEN || movie.titleRU, year: movie.year - 1 })
-    // }
-
-    if (result) {
-      movie = Object.assign({}, movie, {
-        poster: result.poster_path,
-        themoviedbId: result.id
-      })
-    }
-
-    cb(movie)
-
-    await delay(11000)
-  }, { concurrency: 40 })
-}
-
-const backgroundFetchPosters = async (movies, cb) => {
-  await pMap(movies, async movie => {
-    let result = await search({
-      query: movie.titleEN || movie.titleRU,
-      year: movie.year + 1
+  try {
+    const resp = await got(process.env.API_URL, {
+      json: true,
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      query: {
+        language: 'ru',
+        query: query
+      }
     })
 
-    if (!result) {
-      result = await search({
-        query: movie.titleEN || movie.titleRU,
-        year: movie.year - 1
-      })
-    }
+    const result = resp.body.results[0]
+    const limit = resp.headers['x-ratelimit-limit']
+    const remaining = resp.headers['x-ratelimit-remaining']
+    const reset = resp.headers['x-ratelimit-reset']
+
+    return { result, limit, remaining, reset }
+  } catch (err) {
+    console.log('ERR', err)
+  }
+}
+
+const fetchAdditionalData = async event => {
+  const movies = getMovies().filter(x => !x.themoviedbId)
+
+  pMap(movies, async movie => {
+    const { result, remaining, reset } = await search({
+      query: movie.titleRU
+    })
 
     if (result) {
-      cb(movie.id, {
+      updateMovie(movie.id, {
         poster: result.poster_path,
         themoviedbId: result.id
       })
     }
 
-    await delay(11000)
-  }, { concurrency: 20 })
+    if (Number(remaining) === 0) {
+      let now = new Date()
+      let resetDate = new Date(Number(reset) * 1000)
+      console.log('date', resetDate - now)
+      await delay(resetDate - now)
+    }
+  })
 }
 
 module.exports = {
   fetchAdditionalData,
-  backgroundFetchPosters
+  search
 }

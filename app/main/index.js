@@ -98,8 +98,7 @@ ipcMain.on('fetch', async event => {
     const needToAdd = differenceBy(dataFromKinopoisk, dataFromStore, x => x.id)
 
     needToDelete.map(movie => deleteMovie(movie.id))
-
-    await fetchAdditionalData(needToAdd, addMovie)
+    needToAdd.map(addMovie)
 
     const data = compose(
       orderBy('count', 'desc'),
@@ -114,6 +113,8 @@ ipcMain.on('fetch', async event => {
 
     cache = data
     event.sender.send('response', data)
+
+    fetchAdditionalData(event)
   })
 })
 
