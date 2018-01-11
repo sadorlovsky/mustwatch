@@ -12,7 +12,7 @@ import { fetch } from '../store'
 const App = () => {
   return (
     <div>
-      <Headroom style={{ padding: '15px', background: '#282629' }}>
+      <Headroom style={{ padding: '15px 15px 5px', background: '#282629' }}>
         <Search />
         <Bar />
       </Headroom>

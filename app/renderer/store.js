@@ -17,7 +17,11 @@ const defaultState = {
 export const filteredSelector = createSelector(
   state => state.filter,
   state => state.movies,
-  (query, movies) => filter(x => x.titleRU.toLowerCase().includes(query.toLowerCase()), movies)
+  (query, movies) => filter(x => {
+    return (x.titleRU && x.titleRU.toLowerCase().includes(query.toLowerCase())) ||
+      (x.titleEN && x.titleEN.toLowerCase().includes(query.toLowerCase())) ||
+      (x.director && x.director.toLowerCase().includes(query.toLowerCase()))
+  }, movies)
 )
 
 export const countSelector = createSelector(

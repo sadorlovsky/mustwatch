@@ -32,6 +32,7 @@ const ByDirectorList = ({ data = [] }) => (
       margin-bottom: 15px;
       border-radius: 3px;
     }
+
     .header {
       background: #F553BF;
       color: #FFFCFF;

@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { compose, withHandlers } from 'recompose'
 import { toggleGroup, setGroupBy, countSelector } from '../store'
+// import Checkbox from './Checkbox'
 
 const plural = smart.Plurals.getRule('ru')
 
@@ -14,6 +15,7 @@ const Bar = ({ count, group, toggleGroup, groupBy, setGroupBy, logout }) => (
       {count > 0 ? `${count} ${plural(count, ['фильм', 'фильма', 'фильмов'])}` : 'Не найдено'}
     </div>
     <div>
+      {/* <Checkbox checked={group} onChange={toggleGroup} /> */}
       <input className='checkbox' type='checkbox' checked={group} onChange={toggleGroup} />
       <span className='label' onClick={toggleGroup}>группировать по</span>
       <select className='select' value={groupBy} disabled={!group} onChange={setGroupBy}>
@@ -34,6 +36,14 @@ const Bar = ({ count, group, toggleGroup, groupBy, setGroupBy, logout }) => (
 
       .logout {
         cursor: pointer;
+        padding: 3px 5px;
+        box-sizing: border-box;
+        border-radius: 3px;
+      }
+
+      .logout:hover {
+        background: rgba(#BF65F0, 0.5);
+        color: #fff;
       }
 
       .select {
