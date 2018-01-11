@@ -1,4 +1,4 @@
-const { compose, multiply, toNumber } = require('lodash/fp')
+const { compose, multiply, toNumber, groupBy, map, orderBy } = require('lodash/fp')
 const SHA = require('jssha')
 const iconv = require('iconv-lite')
 
@@ -19,6 +19,22 @@ const getId = (...props) => {
   return sha.getHash('HEX')
 }
 
-exports.getRating = getRating
-exports.convertBufferEncoding = convertBufferEncoding
-exports.getId = getId
+const groupDataBy = (data, field) => {
+  return compose(
+    orderBy('count', 'desc'),
+    map.convert({ cap: false })((value, key) => ({
+      id: key,
+      [field]: key,
+      count: value.length,
+      movies: orderBy('year', 'desc', value)
+    })),
+    groupBy(field)
+  )(data)
+}
+
+module.exports = {
+  getRating,
+  convertBufferEncoding,
+  getId,
+  groupDataBy
+}

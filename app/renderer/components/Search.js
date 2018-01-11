@@ -1,21 +1,15 @@
 import React from 'react'
-import { withState } from 'recompose'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { setFilter } from '../store'
 
-const Search = ({ query, setQuery, onSearch }) => (
+const Search = ({ query, setQuery }) => (
   <div>
     <input
       type='text'
       placeholder='Поиск'
       value={query}
-      onChange={e => {
-        setQuery(e.target.value)
-        onSearch(e.target.value)
-      }}
-      onKeyDown={e => {
-        if (e.keyCode === 13) {
-          onSearch(query)
-        }
-      }} />
+      onChange={setQuery} />
     <style jsx>{`
       input {
         width: 100%;
@@ -45,6 +39,14 @@ const Search = ({ query, setQuery, onSearch }) => (
   </div>
 )
 
-const enhanced = withState('query', 'setQuery', '')
+const mapStateToProps = state => ({
+  query: state.filter
+})
+
+const mapDispatchToProps = dispatch => ({
+  setQuery: bindActionCreators(setFilter, dispatch)
+})
+
+const enhanced = connect(mapStateToProps, mapDispatchToProps)
 
 export default enhanced(Search)

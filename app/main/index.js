@@ -4,16 +4,12 @@ const path = require('path')
 const url = require('url')
 const got = require('got')
 const cookie = require('cookie')
-const { compose, groupBy, map, orderBy } = require('lodash/fp')
 const { differenceBy } = require('lodash')
 const { addMovie, getMovies, deleteMovie } = require('./store')
-const { getId } = require('./utils')
 const transform = require('./transform')
-const { fetchAdditionalData } = require('./fetchAdditionalData')
 
 let win
 let cache
-const mapValuesWithKey = map.convert({ cap: false })
 
 try {
   require('electron-reloader')(module)
@@ -100,21 +96,12 @@ ipcMain.on('fetch', async event => {
     needToDelete.map(movie => deleteMovie(movie.id))
     needToAdd.map(addMovie)
 
-    const data = compose(
-      orderBy('count', 'desc'),
-      mapValuesWithKey((value, key) => ({
-        id: getId(key),
-        director: key,
-        count: value.length,
-        movies: orderBy('year', 'desc', value)
-      })),
-      groupBy('director')
-    )(getMovies())
+    const data = getMovies()
 
     cache = data
     event.sender.send('response', data)
 
-    fetchAdditionalData(event)
+    // fetchAdditionalData(event)
   })
 })
 

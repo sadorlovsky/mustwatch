@@ -1,7 +1,7 @@
 const path = require('path')
 
 module.exports = {
-  target: 'electron',
+  target: 'electron-renderer',
   entry: './app/renderer/index.js',
   output: {
     path: path.join(__dirname, 'app/renderer/.dist'),

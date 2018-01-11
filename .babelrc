@@ -1,4 +1,7 @@
 {
   "presets": ["react"],
-  "plugins": [["styled-jsx/babel", { "plugins": ["styled-jsx-plugin-postcss"] }]]
+  "plugins": [
+    ["transform-object-rest-spread"],
+    ["styled-jsx/babel", { "plugins": ["styled-jsx-plugin-postcss"] }]
+  ]
 }

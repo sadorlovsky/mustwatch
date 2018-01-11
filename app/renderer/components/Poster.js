@@ -6,7 +6,7 @@ const colorHash = new ColorHash()
 
 const NullPoster = ({ title }) => (
   <div className='poster'>
-    {title[0]}
+    {title && title[0]}
     <style jsx>{`
       .poster {
         min-width: 92px;
