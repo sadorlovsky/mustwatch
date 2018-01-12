@@ -1,11 +1,14 @@
 import React from 'react'
 import he from 'he'
+import { bindActionCreators } from 'redux'
 import { shell, clipboard } from 'electron'
+import { connect } from 'react-redux'
 import Poster from './Poster'
 import { getRating } from '../../main/utils'
+import { selectMovie } from '../store'
 
-const Movie = ({ titleRU, titleEN, countries, year, time, actors, genres, rating, poster, showLinks, onClick }) => (
-  <div className='movie' onClick={onClick}>
+const Movie = ({ id, titleRU, titleEN, countries, year, time, actors, genres, rating, poster, selected, selectMovie }) => (
+  <div className='movie' onClick={() => selectMovie(id)}>
     <Poster title={titleRU} url={poster} />
     <div>
       <div>
@@ -19,14 +22,14 @@ const Movie = ({ titleRU, titleEN, countries, year, time, actors, genres, rating
       <div>{time} мин</div>
       <div className='rating'>{getRating(rating)}</div>
     </div>
-    {showLinks && (
+    {selected === id && (
       <div className='links'>
-        <div>
+        <div className='link'>
           <img className='kinopoisk' onClick={() => {
             shell.openExternal(`https://www.kinopoisk.ru/index.php?kp_query=${titleRU}`)
           }} src='img/kinopoisk.svg' />
         </div>
-        <div>
+        <div className='link'>
           <img className='clipboard' onClick={() => {
             clipboard.writeText(`${titleRU} ${year}`)
           }} src='img/clipboard.svg' />
@@ -77,9 +80,19 @@ const Movie = ({ titleRU, titleEN, countries, year, time, actors, genres, rating
         background: rgba(#282629, 0.9);
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: space-around;
         border-radius: 3px 0 0 3px;
+      }
+
+      .link {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .link:hover {
+        background: rgba(#BF65F0, 0.5);
       }
 
       .kinopoisk, .clipboard {
@@ -96,4 +109,14 @@ const Movie = ({ titleRU, titleEN, countries, year, time, actors, genres, rating
   </div>
 )
 
-export default Movie
+const mapStateToProps = state => ({
+  selected: state.selected
+})
+
+const mapDispatchToProps = dispatch => ({
+  selectMovie: bindActionCreators(selectMovie, dispatch)
+})
+
+const enhanced = connect(mapStateToProps, mapDispatchToProps)
+
+export default enhanced(Movie)

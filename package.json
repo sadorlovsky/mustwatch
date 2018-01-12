@@ -47,6 +47,7 @@
     "jssha": "^2.3.1",
     "lodash": "^4.17.4",
     "lowdb": "^1.0.0",
+    "lru-cache": "^4.1.1",
     "luxon": "^0.2.12",
     "node-xlsx": "^0.11.2",
     "npm-run-all": "^4.1.2",

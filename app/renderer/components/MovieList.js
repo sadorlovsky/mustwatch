@@ -16,11 +16,7 @@ const ByDirectorList = ({ data = [] }) => (
     <div className='section' key={director}>
       <div className='header'>{director} <span className='count'>{count}</span></div>
       <div className='body'>{movies.map(movie => (
-        <Movie
-          key={movie.id}
-          // showLinks={activeMovieId === movie.id}
-          // onClick={() => onClick(movie.id)}
-          {...movie} />
+        <Movie key={movie.id} {...movie} />
       ))}</div>
     </div>
   ))}

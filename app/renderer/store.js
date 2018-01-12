@@ -4,14 +4,15 @@ import promiseMiddleware from 'redux-promise'
 import { createSelector } from 'reselect'
 import { ipcRenderer } from 'electron'
 import pEvent from 'p-event'
-import { compose, orderBy, map, groupBy, filter, size } from 'lodash/fp'
+import { compose, orderBy, map, groupBy, filter, size, identity } from 'lodash/fp'
 
 const defaultState = {
   loading: true,
   movies: [],
   group: true,
   groupBy: 'director',
-  filter: ''
+  filter: '',
+  selected: null
 }
 
 export const filteredSelector = createSelector(
@@ -47,15 +48,16 @@ export const grouppedSelector = createSelector(
   }
 )
 
-export const { fetch, toggleGroup, setGroupBy, setFilter } = createActions({
+export const { fetch, toggleGroup, setGroupBy, setFilter, selectMovie } = createActions({
   FETCH: async () => {
     ipcRenderer.send('fetch')
     const [, data] = await pEvent(ipcRenderer, 'response', { multiArgs: true })
     return data
   },
-  TOGGLE_GROUP: () => {},
+  TOGGLE_GROUP: identity,
   SET_GROUP_BY: e => e.target.value,
-  SET_FILTER: e => e.target.value
+  SET_FILTER: e => e.target.value,
+  SELECT_MOVIE: identity
 })
 
 const reducer = handleActions({
@@ -75,6 +77,10 @@ const reducer = handleActions({
   [setFilter]: (state, action) => ({
     ...state,
     filter: action.payload
+  }),
+  [selectMovie]: (state, action) => ({
+    ...state,
+    selected: state.selected === action.payload ? null : action.payload
   })
 }, defaultState)
 

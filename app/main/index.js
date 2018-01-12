@@ -4,12 +4,16 @@ const path = require('path')
 const url = require('url')
 const got = require('got')
 const cookie = require('cookie')
-const { differenceBy } = require('lodash')
+const { differenceBy, reverse } = require('lodash')
+const LRU = require('lru-cache')
 const { addMovie, getMovies, deleteMovie } = require('./store')
 const transform = require('./transform')
 
 let win
-let cache
+const cache = LRU({
+  max: 100,
+  maxAge: 1000 * 60
+})
 
 try {
   require('electron-reloader')(module)
@@ -72,8 +76,8 @@ app.on('activate', () => {
 })
 
 ipcMain.on('fetch', async event => {
-  if (cache) {
-    event.sender.send('response', cache)
+  if (cache.has('response')) {
+    event.sender.send('response', cache.get('response'))
   }
 
   win.webContents.session.cookies.get({}, async (err, cookies) => {
@@ -87,7 +91,7 @@ ipcMain.on('fetch', async event => {
       headers: { cookie: cookieData }
     })
 
-    const dataFromKinopoisk = transform(body)
+    const dataFromKinopoisk = reverse(transform(body))
     const dataFromStore = getMovies()
 
     const needToDelete = differenceBy(dataFromStore, dataFromKinopoisk, x => x.id)
@@ -96,9 +100,9 @@ ipcMain.on('fetch', async event => {
     needToDelete.map(movie => deleteMovie(movie.id))
     needToAdd.map(addMovie)
 
-    const data = getMovies()
+    const data = reverse(dataFromKinopoisk)
 
-    cache = data
+    cache.set('response', data)
     event.sender.send('response', data)
 
     // fetchAdditionalData(event)
