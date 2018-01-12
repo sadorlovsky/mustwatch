@@ -1,13 +1,16 @@
 import React from 'react'
 import he from 'he'
 import { bindActionCreators } from 'redux'
-import { shell, clipboard } from 'electron'
+import { shell } from 'electron'
 import { connect } from 'react-redux'
 import Poster from './Poster'
 import { getRating } from '../../main/utils'
-import { selectMovie } from '../store'
+import { selectMovie, copyToClipboard, clearFooter } from '../store'
 
-const Movie = ({ id, titleRU, titleEN, countries, year, time, actors, genres, rating, poster, selected, selectMovie }) => (
+const Movie = ({
+  id, titleRU, titleEN, countries, year, time, actors, genres, rating, poster,
+  selected, selectMovie, copyToClipboard, clearFooter
+}) => (
   <div className='movie' onClick={() => selectMovie(id)}>
     <Poster title={titleRU} url={poster} />
     <div>
@@ -31,7 +34,8 @@ const Movie = ({ id, titleRU, titleEN, countries, year, time, actors, genres, ra
         </div>
         <div className='link'>
           <img className='clipboard' onClick={() => {
-            clipboard.writeText(`${titleRU} ${year}`)
+            copyToClipboard(`${titleRU} ${year}`)
+            setTimeout(clearFooter, 3000)
           }} src='img/clipboard.svg' />
         </div>
       </div>
@@ -114,7 +118,9 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  selectMovie: bindActionCreators(selectMovie, dispatch)
+  selectMovie: bindActionCreators(selectMovie, dispatch),
+  copyToClipboard: bindActionCreators(copyToClipboard, dispatch),
+  clearFooter: bindActionCreators(clearFooter, dispatch)
 })
 
 const enhanced = connect(mapStateToProps, mapDispatchToProps)

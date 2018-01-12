@@ -2,7 +2,7 @@ import { createStore, applyMiddleware } from 'redux'
 import { createActions, handleActions } from 'redux-actions'
 import promiseMiddleware from 'redux-promise'
 import { createSelector } from 'reselect'
-import { ipcRenderer } from 'electron'
+import { ipcRenderer, clipboard } from 'electron'
 import pEvent from 'p-event'
 import { compose, orderBy, map, groupBy, filter, size, identity } from 'lodash/fp'
 
@@ -12,7 +12,9 @@ const defaultState = {
   group: true,
   groupBy: 'director',
   filter: '',
-  selected: null
+  selected: null,
+  footer: false,
+  footerText: ''
 }
 
 export const filteredSelector = createSelector(
@@ -48,7 +50,9 @@ export const grouppedSelector = createSelector(
   }
 )
 
-export const { fetch, toggleGroup, setGroupBy, setFilter, selectMovie } = createActions({
+export const {
+  fetch, toggleGroup, setGroupBy, setFilter, selectMovie, copyToClipboard, clearFooter
+} = createActions({
   FETCH: async () => {
     ipcRenderer.send('fetch')
     const [, data] = await pEvent(ipcRenderer, 'response', { multiArgs: true })
@@ -57,7 +61,12 @@ export const { fetch, toggleGroup, setGroupBy, setFilter, selectMovie } = create
   TOGGLE_GROUP: identity,
   SET_GROUP_BY: e => e.target.value,
   SET_FILTER: e => e.target.value,
-  SELECT_MOVIE: identity
+  SELECT_MOVIE: identity,
+  COPY_TO_CLIPBOARD: text => {
+    clipboard.writeText(text)
+    return 'Название скопировано в буфер обмена'
+  },
+  CLEAR_FOOTER: identity
 })
 
 const reducer = handleActions({
@@ -81,6 +90,16 @@ const reducer = handleActions({
   [selectMovie]: (state, action) => ({
     ...state,
     selected: state.selected === action.payload ? null : action.payload
+  }),
+  [copyToClipboard]: (state, action) => ({
+    ...state,
+    footer: true,
+    footerText: action.payload
+  }),
+  [clearFooter]: state => ({
+    ...state,
+    footer: false,
+    footerText: ''
   })
 }, defaultState)
 

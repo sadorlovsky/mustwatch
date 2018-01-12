@@ -7,9 +7,10 @@ import Spinner from './Spinner'
 import MovieList from './MovieList'
 import Search from './Search'
 import Bar from './Bar'
+import Footer from './Footer'
 import { fetch } from '../store'
 
-const App = () => {
+const App = ({ footer, footerText }) => {
   return (
     <div>
       <Headroom style={{ padding: '15px 15px 5px', background: '#282629' }}>
@@ -19,6 +20,7 @@ const App = () => {
       <div style={{ padding: '0 15px 15px' }}>
         <MovieList />
       </div>
+      {footer && <Footer text={footerText} />}
     </div>
   )
 }
@@ -29,7 +31,9 @@ const withSpinnerWhileLoading = branch(
 )
 
 const mapStateToProps = state => ({
-  loading: state.loading
+  loading: state.loading,
+  footer: state.footer,
+  footerText: state.footerText
 })
 
 const mapDispatchToProps = dispatch => ({

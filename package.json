@@ -59,6 +59,7 @@
     "react-dom": "^16.2.0",
     "react-dropzone": "^4.2.3",
     "react-headroom": "^2.2.2",
+    "react-motion": "^0.5.2",
     "react-redux": "^5.0.6",
     "recompose": "^0.26.0",
     "redux": "^3.7.2",
