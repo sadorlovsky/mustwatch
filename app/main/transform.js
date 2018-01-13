@@ -1,6 +1,6 @@
 'use strict'
 const xlsx = require('node-xlsx')
-const { compose, map, zipObj, pick, curryRight } = require('lodash/fp')
+const { compose, map, zipObj, pick, curryRight, trim } = require('lodash/fp')
 const { renameProps } = require('@sadorlovsky/rename-props')
 const { convertBufferEncoding, getId } = require('./utils')
 
@@ -10,7 +10,12 @@ module.exports = buffer => {
   const [keys, ...movies] = data
 
   const transform = compose(
-    map(x => Object.assign({}, x, { id: getId(x.titleEN || x.titleRU, x.year, x.director) })),
+    map(x => Object.assign({}, x, {
+      id: getId(x.titleEN || x.titleRU, x.year, x.director),
+      actors: x.actors.split(',').map(trim),
+      genres: x.genres.split(',').map(trim),
+      countries: x.countries.split(',').map(trim)
+    })),
     map(pick([
       'titleRU', 'titleEN', 'year', 'countries', 'director',
       'actors', 'time', 'genres', 'rating'

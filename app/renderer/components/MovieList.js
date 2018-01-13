@@ -23,9 +23,9 @@ const PlainList = ({ data }) => (
 )
 
 const ByDirectorList = ({ data = [] }) => (
-  <div>{data.map(({ director, movies = [], count }) => (
-    <div className='section' key={director}>
-      <div className='header'>{director} <span className='count'>{count}</span></div>
+  <div>{data.map(({ keyField, movies = [], count }) => (
+    <div className='section' key={keyField}>
+      <div className='header'>{keyField} <span className='count'>{count}</span></div>
       <div className='body'>{movies.map(movie => (
         <Movie key={movie.id} {...movie} />
       ))}</div>
@@ -52,7 +52,7 @@ const ByDirectorList = ({ data = [] }) => (
       color: #FFFCFF;
       font-weight: normal;
       padding: 3px 7px;
-      border-radius: 50%;
+      border-radius: 4px;
       margin-left: 3px;
       font-size: 14px;
     }
@@ -64,13 +64,7 @@ const MovieList = ({ group, groupBy, data }) => {
   if (!group) {
     return <PlainList data={data} />
   } else {
-    if (groupBy === 'director') {
-      return <ByDirectorList data={data} />
-    } else if (groupBy === 'actor') {
-      return <ByDirectorList data={data} />
-    } else {
-      return null
-    }
+    return <ByDirectorList data={data} />
   }
 }
 

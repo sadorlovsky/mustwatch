@@ -20,9 +20,15 @@ const Movie = ({
         <span className='year'>{he.decode(String(year))}</span>
       </div>
       <div className='title-en'>{titleEN}</div>
-      <div>{actors}</div>
-      <div className='countries'>{countries}</div>
-      <div>{genres}</div>
+      <div>
+        {actors.map(actor => <span key={`${id}-${actor}`}>{actor}, </span>)}
+      </div>
+      <div className='countries'>
+        {countries.map(country => <span key={`${id}-${country}`}>{country}, </span>)}
+      </div>
+      <div>
+        {genres.map(genre => <span key={`${id}-${genre}`}>{genre}, </span>)}
+      </div>
       <div>{time} мин</div>
       <div className='rating'>{getRating(rating)}</div>
     </div>

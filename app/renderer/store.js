@@ -5,7 +5,7 @@ import { createSelector } from 'reselect'
 import { ipcRenderer, clipboard } from 'electron'
 import pEvent from 'p-event'
 import {
-  compose, orderBy, map, groupBy, filter, size, identity, shuffle
+  compose, orderBy, map, groupBy, filter, size, identity, shuffle, reduce
 } from 'lodash/fp'
 
 const defaultState = {
@@ -60,15 +60,72 @@ export const grouppedSelector = createSelector(
   filteredSelector,
   (shouldGroup, field, movies) => {
     if (!shouldGroup) return movies
-    return compose(
-      orderBy('count', 'desc'),
-      map.convert({ cap: false })((value, key) => ({
-        [field]: key,
-        count: value.length,
-        movies: orderBy('year', 'desc', value)
-      })),
-      groupBy(field)
-    )(movies)
+    if (field === 'director') {
+      return compose(
+        orderBy('count', 'desc'),
+        map.convert({ cap: false })((value, key) => ({
+          keyField: key,
+          count: value.length,
+          movies: orderBy('year', 'desc', value)
+        })),
+        groupBy('director')
+      )(movies)
+    }
+    if (field === 'actor') {
+      return compose(
+        orderBy('count', 'desc'),
+        map.convert({ cap: false })((value, key) => ({
+          keyField: key,
+          count: value.length,
+          movies: orderBy('year', 'desc', value)
+        })),
+        groupBy('actor'),
+        reduce((res, movie) => {
+          const movies = movie.actors.map(actor => {
+            return Object.assign({}, movie, { actor })
+          })
+
+          return res.concat(movies)
+        }, [])
+      )(movies)
+    }
+    if (field === 'genre') {
+      return compose(
+        orderBy('count', 'desc'),
+        map.convert({ cap: false })((value, key) => ({
+          keyField: key,
+          count: value.length,
+          movies: orderBy('year', 'desc', value)
+        })),
+        groupBy('genre'),
+        reduce((res, movie) => {
+          const movies = movie.genres.map(genre => {
+            return Object.assign({}, movie, { genre })
+          })
+
+          return res.concat(movies)
+        }, [])
+      )(movies)
+    }
+    if (field === 'country') {
+      return compose(
+        orderBy('count', 'desc'),
+        map.convert({ cap: false })((value, key) => ({
+          keyField: key,
+          count: value.length,
+          movies: orderBy('year', 'desc', value)
+        })),
+        groupBy('country'),
+        reduce((res, movie) => {
+          const movies = movie.countries.map(country => {
+            return Object.assign({}, movie, { country })
+          })
+
+          return res.concat(movies)
+        }, [])
+      )(movies)
+    }
+    return movies
   }
 )
 
