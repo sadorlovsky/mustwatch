@@ -16,7 +16,7 @@
     "prepush": "standard",
     "webpack:watch": "webpack --watch",
     "webpack:build": "webpack",
-    "electron": "electron app/main/index.js",
+    "electron": "electron app/main",
     "start": "npm-run-all --parallel webpack:watch electron",
     "pack": "electron-packager .",
     "build": "npm-run-all --serial webpack:build pack"
@@ -37,6 +37,7 @@
     "electron-is-dev": "^0.3.0",
     "electron-packager": "^10.1.0",
     "electron-reloader": "^0.1.0",
+    "electron-util": "^0.4.1",
     "elemon": "^5.0.3",
     "get-stdin": "^5.0.1",
     "got": "^8.0.1",

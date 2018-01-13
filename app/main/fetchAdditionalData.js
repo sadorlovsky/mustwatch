@@ -39,7 +39,7 @@ const fetchAdditionalData = async event => {
 
   pMap(movies, async movie => {
     const { result, remaining, reset } = await search({
-      query: movie.titleEN
+      query: movie.titleEN || movie.titleRU
     })
 
     if (result) {

@@ -33,9 +33,6 @@ function createWindow () {
   })
 
   win.loadURL(process.env.KINOPOISK_URL)
-  win.webContents.enableDeviceEmulation({
-    screenPosition: 'mobile'
-  })
 
   win.on('closed', () => {
     win = null
