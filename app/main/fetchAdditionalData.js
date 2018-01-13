@@ -39,13 +39,17 @@ const fetchAdditionalData = async event => {
 
   pMap(movies, async movie => {
     const { result, remaining, reset } = await search({
-      query: movie.titleRU
+      query: movie.titleEN
     })
 
     if (result) {
       updateMovie(movie.id, {
         poster: result.poster_path,
         themoviedbId: result.id
+      })
+
+      event.send('updateMovie', movie.id, {
+        poster: result.poster_path
       })
     }
 

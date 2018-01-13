@@ -51,7 +51,8 @@ export const grouppedSelector = createSelector(
 )
 
 export const {
-  fetch, toggleGroup, setGroupBy, setFilter, selectMovie, copyToClipboard, clearFooter
+  fetch, toggleGroup, setGroupBy, setFilter, selectMovie, copyToClipboard,
+  clearFooter, updateMovie
 } = createActions({
   FETCH: async () => {
     ipcRenderer.send('fetch')
@@ -66,7 +67,8 @@ export const {
     clipboard.writeText(text)
     return 'Название скопировано в буфер обмена'
   },
-  CLEAR_FOOTER: identity
+  CLEAR_FOOTER: identity,
+  UPDATE_MOVIE: (id, data) => ({ id, data })
 })
 
 const reducer = handleActions({
@@ -100,6 +102,15 @@ const reducer = handleActions({
     ...state,
     footer: false,
     footerText: ''
+  }),
+  [updateMovie]: (state, action) => ({
+    ...state,
+    movies: state.movies.map(m => {
+      if (m.id === action.payload.id) {
+        return { ...m, ...action.payload.data }
+      }
+      return m
+    })
   })
 }, defaultState)
 

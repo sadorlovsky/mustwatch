@@ -1,4 +1,5 @@
 import React from 'react'
+import { ipcRenderer } from 'electron'
 import { compose, lifecycle, branch, renderComponent } from 'recompose'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -8,7 +9,7 @@ import MovieList from './MovieList'
 import Search from './Search'
 import Bar from './Bar'
 import Footer from './Footer'
-import { fetch } from '../store'
+import { fetch, updateMovie } from '../store'
 
 const App = ({ footer, footerText }) => {
   return (
@@ -37,7 +38,8 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  fetch: bindActionCreators(fetch, dispatch)
+  fetch: bindActionCreators(fetch, dispatch),
+  updateMovie: bindActionCreators(updateMovie, dispatch)
 })
 
 const enhanced = compose(
@@ -45,6 +47,9 @@ const enhanced = compose(
   lifecycle({
     componentDidMount () {
       this.props.fetch()
+      ipcRenderer.on('updateMovie', (e, id, data) => {
+        this.props.updateMovie(id, data)
+      })
     }
   }),
   withSpinnerWhileLoading
