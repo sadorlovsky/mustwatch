@@ -10,6 +10,7 @@ const Search = ({ query, setQuery }) => (
       placeholder='Поиск'
       value={query}
       onChange={setQuery} />
+
     <style jsx>{`
       input {
         width: 100%;

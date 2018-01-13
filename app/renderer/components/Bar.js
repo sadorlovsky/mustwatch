@@ -4,12 +4,17 @@ import { ipcRenderer } from 'electron'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { compose, withHandlers } from 'recompose'
-import { toggleGroup, setGroupBy, countSelector } from '../store'
+import {
+  toggleGroup, setGroupBy, countSelector, setOrder, setSortBy, toggleRandom
+} from '../store'
 // import Checkbox from './Checkbox'
 
 const plural = smart.Plurals.getRule('ru')
 
-const Bar = ({ count, group, toggleGroup, groupBy, setGroupBy, logout }) => (
+const Bar = ({
+  count, group, toggleGroup, groupBy, setGroupBy, logout, order, setOrder,
+  sortBy, setSortBy, toggleRandom
+}) => (
   <div className='bar'>
     <div>
       {count > 0 ? `${count} ${plural(count, ['фильм', 'фильма', 'фильмов'])}` : 'Не найдено'}
@@ -21,7 +26,25 @@ const Bar = ({ count, group, toggleGroup, groupBy, setGroupBy, logout }) => (
       <select className='select' value={groupBy} disabled={!group} onChange={setGroupBy}>
         <option value='director'>режиссерам</option>
         <option value='actor'>актерам</option>
+        <option value='genre'>жанрам</option>
+        <option value='country'>странам</option>
       </select>
+    </div>
+    <div>
+      сортировать по
+      <select className='select' value={sortBy} onChange={setSortBy}>
+        <option value='queue'>очереди</option>
+        <option value='title'>названию</option>
+        <option value='rating'>рейтингу</option>
+        <option value='time'>времени</option>
+        <option value='year'>году</option>
+      </select>
+      <button onClick={() => setOrder(order * -1)}>
+        {order === 1 ? '▲' : '▼'}
+      </button>
+    </div>
+    <div className='random' onClick={toggleRandom}>
+      <img src='img/dice.svg' style={{ width: '25px', height: '25px' }} />
     </div>
     <div className='logout' onClick={logout}>выйти</div>
 
@@ -36,8 +59,8 @@ const Bar = ({ count, group, toggleGroup, groupBy, setGroupBy, logout }) => (
 
       .logout {
         cursor: pointer;
-        padding: 3px 5px;
-        box-sizing: border-box;
+        /* padding: 3px 5px; */
+        /* box-sizing: border-box; */
         border-radius: 3px;
       }
 
@@ -53,6 +76,18 @@ const Bar = ({ count, group, toggleGroup, groupBy, setGroupBy, logout }) => (
       .label, .checkbox {
         cursor: pointer;
       }
+
+      .random {
+        cursor: pointer;
+      }
+
+      .random > img {
+        transition: all 0.1s ease-in;
+      }
+
+      .random:hover > img {
+        transform: rotate(-10deg) scale(1.1);
+      }
     `}</style>
   </div>
 )
@@ -60,11 +95,16 @@ const Bar = ({ count, group, toggleGroup, groupBy, setGroupBy, logout }) => (
 const mapStateToProps = state => ({
   count: countSelector(state),
   group: state.group,
-  groupBy: state.groupBy
+  groupBy: state.groupBy,
+  sortBy: state.sortBy,
+  order: state.order
 })
 const mapDispatchToProps = dispatch => ({
   toggleGroup: bindActionCreators(toggleGroup, dispatch),
-  setGroupBy: bindActionCreators(setGroupBy, dispatch)
+  setGroupBy: bindActionCreators(setGroupBy, dispatch),
+  setOrder: bindActionCreators(setOrder, dispatch),
+  setSortBy: bindActionCreators(setSortBy, dispatch),
+  toggleRandom: bindActionCreators(toggleRandom, dispatch)
 })
 const enhanced = compose(
   connect(mapStateToProps, mapDispatchToProps),

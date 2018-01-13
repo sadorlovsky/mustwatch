@@ -4,22 +4,44 @@ import promiseMiddleware from 'redux-promise'
 import { createSelector } from 'reselect'
 import { ipcRenderer, clipboard } from 'electron'
 import pEvent from 'p-event'
-import { compose, orderBy, map, groupBy, filter, size, identity } from 'lodash/fp'
+import {
+  compose, orderBy, map, groupBy, filter, size, identity, shuffle
+} from 'lodash/fp'
 
 const defaultState = {
   loading: true,
   movies: [],
-  group: true,
+  group: false,
   groupBy: 'director',
   filter: '',
   selected: null,
   footer: false,
-  footerText: ''
+  footerText: '',
+  sortBy: 'queue',
+  order: -1,
+  random: false
 }
+
+export const sortedSelector = createSelector(
+  state => state.sortBy,
+  state => state.order,
+  state => state.movies,
+  (by, order, movies) => {
+    if (by === 'queue') {
+      return order === 1 ? movies : movies.slice().reverse()
+    }
+
+    if (by === 'title') {
+      return orderBy('titleRU', order === 1 ? 'asc' : 'desc', movies)
+    }
+
+    return orderBy(by, order === 1 ? 'asc' : 'desc', movies)
+  }
+)
 
 export const filteredSelector = createSelector(
   state => state.filter,
-  state => state.movies,
+  sortedSelector,
   (query, movies) => filter(x => {
     return (x.titleRU && x.titleRU.toLowerCase().includes(query.toLowerCase())) ||
       (x.titleEN && x.titleEN.toLowerCase().includes(query.toLowerCase())) ||
@@ -50,9 +72,14 @@ export const grouppedSelector = createSelector(
   }
 )
 
+export const randomSelector = createSelector(
+  state => state.movies,
+  movies => shuffle(movies).slice(0, 1)
+)
+
 export const {
   fetch, toggleGroup, setGroupBy, setFilter, selectMovie, copyToClipboard,
-  clearFooter, updateMovie, setFooterText
+  clearFooter, updateMovie, setFooterText, setOrder, setSortBy, toggleRandom
 } = createActions({
   FETCH: async () => {
     ipcRenderer.send('fetch')
@@ -69,7 +96,10 @@ export const {
   },
   CLEAR_FOOTER: identity,
   UPDATE_MOVIE: (id, data) => ({ id, data }),
-  SET_FOOTER_TEXT: identity
+  SET_FOOTER_TEXT: identity,
+  SET_ORDER: identity,
+  SET_SORT_BY: e => e.target.value,
+  TOGGLE_RANDOM: identity
 })
 
 const reducer = handleActions({
@@ -117,6 +147,18 @@ const reducer = handleActions({
     ...state,
     footer: true,
     footerText: action.payload
+  }),
+  [setOrder]: (state, action) => ({
+    ...state,
+    order: action.payload
+  }),
+  [setSortBy]: (state, action) => ({
+    ...state,
+    sortBy: action.payload
+  }),
+  [toggleRandom]: state => ({
+    ...state,
+    random: !state.random
   })
 }, defaultState)
 

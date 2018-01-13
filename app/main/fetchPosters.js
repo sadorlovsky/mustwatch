@@ -68,7 +68,7 @@ const job = async (movie, params, event) => {
 module.exports = async (event, cb) => {
   const data = getMovies().filter(x => !x.poster)
 
-  queue.onIdle().then(cb)
+  queue.onEmpty().then(cb)
 
   pMap(data, async movie => {
     queue.add(() => job(movie, {

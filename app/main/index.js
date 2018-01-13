@@ -4,7 +4,7 @@ const path = require('path')
 const url = require('url')
 const got = require('got')
 const cookie = require('cookie')
-const { differenceBy, reverse } = require('lodash')
+const { differenceBy } = require('lodash')
 const LRU = require('lru-cache')
 const { addMovie, getMovies, deleteMovie } = require('./store')
 const transform = require('./transform')
@@ -16,9 +16,9 @@ const cache = LRU({
   maxAge: 1000 * 60
 })
 
-try {
-  require('electron-reloader')(module)
-} catch (err) {}
+// try {
+//   require('electron-reloader')(module)
+// } catch (err) {}
 
 function createWindow () {
   win = new BrowserWindow({
@@ -76,6 +76,7 @@ app.on('activate', () => {
 ipcMain.on('fetch', async event => {
   if (cache.has('response')) {
     event.sender.send('response', cache.get('response'))
+    return
   }
 
   win.webContents.session.cookies.get({}, async (err, cookies) => {
@@ -89,7 +90,7 @@ ipcMain.on('fetch', async event => {
       headers: { cookie: cookieData }
     })
 
-    const dataFromKinopoisk = reverse(transform(body))
+    const dataFromKinopoisk = transform(body).slice().reverse()
     const dataFromStore = getMovies()
 
     const needToDelete = differenceBy(dataFromStore, dataFromKinopoisk, x => x.id)
@@ -98,8 +99,7 @@ ipcMain.on('fetch', async event => {
     needToDelete.map(movie => deleteMovie(movie.id))
     needToAdd.map(addMovie)
 
-    const data = reverse(dataFromStore)
-
+    const data = dataFromStore
     cache.set('response', data)
     event.sender.send('response', data)
 
@@ -113,9 +113,6 @@ ipcMain.on('fetch', async event => {
 ipcMain.on('logout', async () => {
   win.webContents.session.clearStorageData({}, () => {
     win.loadURL(process.env.KINOPOISK_URL)
-    win.webContents.enableDeviceEmulation({
-      screenPosition: 'mobile'
-    })
   })
 })
 

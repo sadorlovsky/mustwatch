@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import Movie from './Movie'
-import { grouppedSelector } from '../store'
+import { randomSelector, grouppedSelector } from '../store'
 
 const PlainList = ({ data }) => (
   <div>{data.map(movie => (
@@ -64,7 +64,7 @@ const MovieList = ({ group, groupBy, data }) => {
 }
 
 const mapStateToProps = state => ({
-  data: grouppedSelector(state),
+  data: state.random ? randomSelector(state) : grouppedSelector(state),
   group: state.group,
   groupBy: state.groupBy
 })
