@@ -4,16 +4,18 @@ import { ipcRenderer } from 'electron'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { compose, withHandlers } from 'recompose'
+import classNames from 'classnames'
 import {
   toggleGroup, setGroupBy, countSelector, setOrder, setSortBy, toggleRandom
 } from '../store'
+import Dice from '../img/dice.svg'
 // import Checkbox from './Checkbox'
 
 const plural = smart.Plurals.getRule('ru')
 
 const Bar = ({
   count, group, toggleGroup, groupBy, setGroupBy, logout, order, setOrder,
-  sortBy, setSortBy, toggleRandom
+  sortBy, setSortBy, toggleRandom, random
 }) => (
   <div className='bar'>
     <div>
@@ -43,8 +45,10 @@ const Bar = ({
         {order === 1 ? '▲' : '▼'}
       </button>
     </div>
-    <div className='random' onClick={toggleRandom}>
-      <img src='img/dice.svg' style={{ width: '25px', height: '25px' }} />
+    <div className={classNames('random', { active: random })} onClick={toggleRandom}>
+      <div className='dice'>
+        <Dice style={{ width: '25px', height: '25px' }} />
+      </div>
     </div>
     <div className='logout' onClick={logout}>выйти</div>
 
@@ -65,7 +69,7 @@ const Bar = ({
       }
 
       .logout:hover {
-        background: rgba(#BF65F0, 0.5);
+        background: #BF65F0;
         color: #fff;
       }
 
@@ -79,13 +83,20 @@ const Bar = ({
 
       .random {
         cursor: pointer;
+        transition: all 0.1s ease-in;
+        padding: 1px;
+        border-radius: 3px;
       }
 
-      .random > img {
+      .active {
+        background: #BF65F0;
+      }
+
+      .dice {
         transition: all 0.1s ease-in;
       }
 
-      .random:hover > img {
+      .random:hover > .dice {
         transform: rotate(-10deg) scale(1.1);
       }
     `}</style>
@@ -97,7 +108,8 @@ const mapStateToProps = state => ({
   group: state.group,
   groupBy: state.groupBy,
   sortBy: state.sortBy,
-  order: state.order
+  order: state.order,
+  random: state.random
 })
 const mapDispatchToProps = dispatch => ({
   toggleGroup: bindActionCreators(toggleGroup, dispatch),

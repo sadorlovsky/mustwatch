@@ -28,6 +28,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-react": "^6.24.1",
     "chalk": "^2.3.0",
+    "classnames": "^2.2.5",
     "color-hash": "^1.0.3",
     "common-tags": "^1.6.0",
     "cookie": "^0.3.1",
@@ -70,6 +71,7 @@
     "smart-plurals": "^1.1.0",
     "styled-jsx": "^2.2.1",
     "styled-jsx-plugin-postcss": "^0.1.2",
+    "svg-react-loader": "^0.4.5",
     "webpack": "^3.10.0"
   },
   "devDependencies": {

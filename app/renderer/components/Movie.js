@@ -3,6 +3,7 @@ import he from 'he'
 import { bindActionCreators } from 'redux'
 import { shell } from 'electron'
 import { connect } from 'react-redux'
+import classNames from 'classnames'
 import Poster from './Poster'
 import { getRating } from '../../main/utils'
 import { selectMovie, copyToClipboard, clearFooter } from '../store'
@@ -11,7 +12,7 @@ const Movie = ({
   id, titleRU, titleEN, countries, year, time, actors, genres, rating, poster,
   selected, selectMovie, copyToClipboard, clearFooter
 }) => (
-  <div className='movie' onClick={() => selectMovie(id)}>
+  <div className={classNames('movie', { active: selected === id })} onClick={() => selectMovie(id)}>
     <Poster title={titleRU} url={poster} />
     <div>
       <div>
@@ -47,11 +48,11 @@ const Movie = ({
         cursor: pointer;
         display: flex;
         position: relative;
+        border-radius: 3px;
       }
 
-      .movie:hover {
+      .active, .movie:hover {
         background: #BF65F0;
-        border-radius: 3px;
       }
 
       .title {
