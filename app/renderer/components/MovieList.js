@@ -4,11 +4,22 @@ import Movie from './Movie'
 import { randomSelector, grouppedSelector } from '../store'
 
 const PlainList = ({ data }) => (
-  <div>{data.map(movie => (
-    <div className='section' key={movie.id}>
-      <Movie {...movie} />
-    </div>
-  ))}</div>
+  <div>
+    {data.map(movie => (
+      <div className='section' key={movie.id}>
+        <Movie {...movie} />
+      </div>
+    ))}
+
+    <style jsx>{`
+      .section {
+        background: #CC78FA;
+        color: #FFFCFF;
+        margin-bottom: 15px;
+        border-radius: 3px;
+      }
+    `}</style>
+  </div>
 )
 
 const ByDirectorList = ({ data = [] }) => (

@@ -16,10 +16,6 @@ const cache = LRU({
   maxAge: 1000 * 60
 })
 
-// try {
-//   require('electron-reloader')(module)
-// } catch (err) {}
-
 function createWindow () {
   win = new BrowserWindow({
     width: 600,
