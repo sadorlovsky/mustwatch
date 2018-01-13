@@ -6,7 +6,6 @@ const Footer = ({ text }) => (
     defaultStyle={{ height: -30 }}
     style={{ height: spring(0) }}>
     {style => {
-      console.log('STYLE', style)
       return (
         <div className='footer'>
           {text}

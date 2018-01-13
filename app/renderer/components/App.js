@@ -9,7 +9,7 @@ import MovieList from './MovieList'
 import Search from './Search'
 import Bar from './Bar'
 import Footer from './Footer'
-import { fetch, updateMovie } from '../store'
+import { fetch, updateMovie, setFooterText, clearFooter } from '../store'
 
 const App = ({ footer, footerText }) => {
   return (
@@ -39,7 +39,9 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   fetch: bindActionCreators(fetch, dispatch),
-  updateMovie: bindActionCreators(updateMovie, dispatch)
+  clearFooter: bindActionCreators(clearFooter, dispatch),
+  updateMovie: bindActionCreators(updateMovie, dispatch),
+  setFooterText: bindActionCreators(setFooterText, dispatch)
 })
 
 const enhanced = compose(
@@ -49,6 +51,12 @@ const enhanced = compose(
       this.props.fetch()
       ipcRenderer.on('updateMovie', (e, id, data) => {
         this.props.updateMovie(id, data)
+      })
+      ipcRenderer.on('startFetchingPosters', () => {
+        this.props.setFooterText('Получение постеров...')
+      })
+      ipcRenderer.on('finishFetchingPosters', () => {
+        this.props.clearFooter()
       })
     }
   }),

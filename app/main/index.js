@@ -8,7 +8,7 @@ const { differenceBy, reverse } = require('lodash')
 const LRU = require('lru-cache')
 const { addMovie, getMovies, deleteMovie } = require('./store')
 const transform = require('./transform')
-const { fetchAdditionalData } = require('./fetchAdditionalData')
+const fetchPosters = require('./fetchPosters')
 
 let win
 const cache = LRU({
@@ -103,7 +103,10 @@ ipcMain.on('fetch', async event => {
     cache.set('response', data)
     event.sender.send('response', data)
 
-    fetchAdditionalData(win.webContents)
+    win.webContents.send('startFetchingPosters')
+    fetchPosters(win.webContents, () => {
+      win.webContents.send('finishFetchingPosters')
+    })
   })
 })
 
