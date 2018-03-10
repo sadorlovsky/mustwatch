@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import classNames from 'classnames'
 import Poster from './Poster'
 import { getRating } from '../../main/utils'
-import { selectMovie, copyToClipboard, clearFooter } from '../store'
+import { selectMovie, copyToClipboard, clearFooter } from '../redux/actions'
 
 const Movie = ({
   id, titleRU, titleEN, countries, year, time, actors, genres, rating, poster,

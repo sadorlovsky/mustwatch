@@ -16,7 +16,6 @@ const Spinner = ({ poster }) => (
         justify-content: center;
         align-items: center;
         background-color: #282629;
-        background-image: url(https://image.tmdb.org/t/p/w500/${poster});
         background-size: cover;
         background-position: center;
       }

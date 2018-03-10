@@ -6,8 +6,9 @@ import { connect } from 'react-redux'
 import { compose, withHandlers } from 'recompose'
 import classNames from 'classnames'
 import {
-  toggleGroup, setGroupBy, countSelector, setOrder, setSortBy, toggleRandom
-} from '../store'
+  toggleGroup, setGroupBy, setOrder, setSortBy, toggleRandom
+} from '../redux/actions'
+import { countSelector2 } from '../redux/selectors'
 import Dice from '../img/dice.svg'
 // import Checkbox from './Checkbox'
 
@@ -104,7 +105,7 @@ const Bar = ({
 )
 
 const mapStateToProps = state => ({
-  count: countSelector(state),
+  count: countSelector2(state),
   group: state.group,
   groupBy: state.groupBy,
   sortBy: state.sortBy,

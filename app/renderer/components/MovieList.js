@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import Movie from './Movie'
-import { randomSelector, grouppedSelector } from '../store'
+import { randomSelector, grouppedSelector } from '../redux/selectors'
 
 const PlainList = ({ data }) => (
   <div>

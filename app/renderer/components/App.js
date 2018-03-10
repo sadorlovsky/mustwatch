@@ -5,23 +5,33 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Headroom from 'react-headroom'
 import Spinner from './Spinner'
-import MovieList from './MovieList'
+// import MovieList from './MovieList'
+import MovieList from './MovieList2'
 import Search from './Search'
 import Bar from './Bar'
 import Footer from './Footer'
-import { fetch, updateMovie, setFooterText, clearFooter } from '../store'
+import { fetch, updateMovie, setFooterText, clearFooter } from '../redux/actions'
 
 const App = ({ footer, footerText }) => {
   return (
     <div>
-      <Headroom style={{ padding: '15px 15px 5px', background: '#282629' }}>
-        <Search />
-        <Bar />
+      <Headroom>
+        <div className='lol'>
+          <Search />
+          <Bar />
+        </div>
       </Headroom>
       <div style={{ padding: '0 15px 15px' }}>
         <MovieList />
       </div>
       {footer && <Footer text={footerText} />}
+
+      <style jsx>{`
+        .lol {
+          padding: 15px 15px 5px;
+          background: rgba(#000, 0.9);
+        }
+      `}</style>
     </div>
   )
 }

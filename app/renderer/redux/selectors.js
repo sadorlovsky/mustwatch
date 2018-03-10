@@ -1,26 +1,7 @@
-import { createStore, applyMiddleware } from 'redux'
-import { createActions, handleActions } from 'redux-actions'
-import promiseMiddleware from 'redux-promise'
 import { createSelector } from 'reselect'
-import { ipcRenderer, clipboard } from 'electron'
-import pEvent from 'p-event'
 import {
-  compose, orderBy, map, groupBy, filter, size, identity, shuffle, reduce
+  compose, orderBy, map, groupBy, filter, size, shuffle, reduce
 } from 'lodash/fp'
-
-const defaultState = {
-  loading: true,
-  movies: [],
-  group: false,
-  groupBy: 'director',
-  filter: '',
-  selected: null,
-  footer: false,
-  footerText: '',
-  sortBy: 'queue',
-  order: -1,
-  random: false
-}
 
 export const sortedSelector = createSelector(
   state => state.sortBy,
@@ -39,6 +20,32 @@ export const sortedSelector = createSelector(
   }
 )
 
+export const sortedSelector2 = createSelector(
+  state => state.sortBy,
+  state => state.order,
+  state => state.movieIds,
+  state => state.movieById,
+  (by, order, ids, movieById) => {
+    if (by === 'queue') {
+      return order === 1 ? ids : ids.slice().reverse()
+    }
+
+    if (by === 'title') {
+      return compose(
+        map(({ id }) => id),
+        orderBy('title', order === 1 ? 'asc' : 'desc'),
+        map(id => ({ id, title: movieById[id].titleRU }))
+      )(ids)
+    }
+
+    return compose(
+      map(({ id }) => id),
+      orderBy(by, order === 1 ? 'asc' : 'desc'),
+      map(id => ({ id, [by]: movieById[id][by] }))
+    )(ids)
+  }
+)
+
 export const filteredSelector = createSelector(
   state => state.filter,
   sortedSelector,
@@ -49,8 +56,34 @@ export const filteredSelector = createSelector(
   }, movies)
 )
 
+export const filteredSelector2 = createSelector(
+  state => state.filter,
+  sortedSelector2,
+  state => state.movieById,
+  (query, ids, movieById) => {
+    return compose(
+      map(({ id }) => id),
+      filter(movie => movie.titleRU.includes(query.toLowerCase()) ||
+        movie.titleEN.includes(query.toLowerCase()) ||
+        movie.director.includes(query.toLowerCase())
+      ),
+      map(id => ({
+        id,
+        titleRU: movieById[id].titleRU ? movieById[id].titleRU.toLowerCase() : '',
+        titleEN: movieById[id].titleEN ? movieById[id].titleEN.toLowerCase() : '',
+        director: movieById[id].director ? movieById[id].director.toLowerCase() : ''
+      }))
+    )(ids)
+  }
+)
+
 export const countSelector = createSelector(
   filteredSelector,
+  movies => size(movies)
+)
+
+export const countSelector2 = createSelector(
+  filteredSelector2,
   movies => size(movies)
 )
 
@@ -129,94 +162,23 @@ export const grouppedSelector = createSelector(
   }
 )
 
+export const grouppedSelector2 = createSelector(
+  state => state.group,
+  state => state.groupBy,
+  filteredSelector2,
+  state => state.movieById,
+  (shouldGroup, field, ids, movieById) => {
+    if (!shouldGroup) return ids
+    return ids
+  }
+)
+
 export const randomSelector = createSelector(
   state => state.movies,
   movies => shuffle(movies).slice(0, 1)
 )
 
-export const {
-  fetch, toggleGroup, setGroupBy, setFilter, selectMovie, copyToClipboard,
-  clearFooter, updateMovie, setFooterText, setOrder, setSortBy, toggleRandom
-} = createActions({
-  FETCH: async () => {
-    ipcRenderer.send('fetch')
-    const [, data] = await pEvent(ipcRenderer, 'response', { multiArgs: true })
-    return data
-  },
-  TOGGLE_GROUP: identity,
-  SET_GROUP_BY: e => e.target.value,
-  SET_FILTER: e => e.target.value,
-  SELECT_MOVIE: identity,
-  COPY_TO_CLIPBOARD: text => {
-    clipboard.writeText(text)
-    return 'Название скопировано в буфер обмена'
-  },
-  CLEAR_FOOTER: identity,
-  UPDATE_MOVIE: (id, data) => ({ id, data }),
-  SET_FOOTER_TEXT: identity,
-  SET_ORDER: identity,
-  SET_SORT_BY: e => e.target.value,
-  TOGGLE_RANDOM: identity
-})
-
-const reducer = handleActions({
-  [fetch]: (state, action) => ({
-    ...state,
-    movies: [...state.movies, ...action.payload],
-    loading: false
-  }),
-  [toggleGroup]: (state, action) => ({
-    ...state,
-    group: !state.group
-  }),
-  [setGroupBy]: (state, action) => ({
-    ...state,
-    groupBy: action.payload
-  }),
-  [setFilter]: (state, action) => ({
-    ...state,
-    filter: action.payload
-  }),
-  [selectMovie]: (state, action) => ({
-    ...state,
-    selected: state.selected === action.payload ? null : action.payload
-  }),
-  [copyToClipboard]: (state, action) => ({
-    ...state,
-    footer: true,
-    footerText: action.payload
-  }),
-  [clearFooter]: state => ({
-    ...state,
-    footer: false,
-    footerText: ''
-  }),
-  [updateMovie]: (state, action) => ({
-    ...state,
-    movies: state.movies.map(m => {
-      if (m.id === action.payload.id) {
-        return { ...m, ...action.payload.data }
-      }
-      return m
-    })
-  }),
-  [setFooterText]: (state, action) => ({
-    ...state,
-    footer: true,
-    footerText: action.payload
-  }),
-  [setOrder]: (state, action) => ({
-    ...state,
-    order: action.payload
-  }),
-  [setSortBy]: (state, action) => ({
-    ...state,
-    sortBy: action.payload
-  }),
-  [toggleRandom]: state => ({
-    ...state,
-    random: !state.random
-  })
-}, defaultState)
-
-export const store = createStore(reducer, applyMiddleware(promiseMiddleware))
+export const randomSelector2 = createSelector(
+  state => state.movieIds,
+  movies => shuffle(movies).slice(0, 1)
+)

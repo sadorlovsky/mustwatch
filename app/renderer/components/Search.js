@@ -1,7 +1,7 @@
 import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { setFilter } from '../store'
+import { setFilter } from '../redux/actions'
 
 const Search = ({ query, setQuery }) => (
   <div>
@@ -17,7 +17,8 @@ const Search = ({ query, setQuery }) => (
         margin: 0;
         padding: 0;
         box-shadow: none;
-        background: #F553BF;
+        /* background: #F553BF; */
+        background: rgba(#000, 0.8);
         color: #FFFCFF;
         border: 2px solid transparent;
         box-sizing: border-box;

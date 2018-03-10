@@ -2,7 +2,7 @@ import React from 'react'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { webFrame } from 'electron'
-import { store } from './store'
+import { store } from './redux'
 import App from './components/App'
 
 webFrame.setZoomFactor(1)
